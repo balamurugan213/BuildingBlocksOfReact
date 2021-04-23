@@ -62,7 +62,7 @@ React has different name for implement a function or properties like
 
 - class --> className
 
-## COmponents
+## Components
 
 ```js
 const BookList =() =>{
