@@ -236,3 +236,244 @@ const BookList =() =>{
     );
 }
 ```
+
+## USESTATE
+
+useState is a Hook that allows you to have state variables in functional components.
+
+You pass the initial state to this function and it returns a variable with the current state value (not necessarily the initial state) and another function to update this value.
+
+liberary:
+
+```js
+import React, { useState } from 'react';
+
+const count = useState(initial value,funtionname)
+
+```
+
+The initaial value set the count value initially and functionname can be use to change the value to a different.
+
+## USEEFFETS
+
+With useEffect, you invoke side effects from within functional components, which is an important concept to understand in the React Hooks era. Working with the side effects invoked by the useEffect Hook may seem cumbersome at first, but you’ll eventually learn everything makes a lot of sense.
+
+```js
+useEffect(callback[, dependencies]);
+```
+
+Example
+
+```js
+import { useEffect } from 'react';
+
+function Greet({ name }) {
+  const message = `Hello, ${name}!`;   // Calculates output
+
+  useEffect(() => {
+    // Good!
+    document.title = 'Greetings page'; // Side-effect!
+  }, []);
+
+  return <div>{message}</div>;         // Calculates output
+}
+```
+
+- To Runs at every render
+
+```js
+import { useEffect } from 'react';
+
+function MyComponent() {
+  useEffect(() => {
+    // Runs after EVERY rendering
+  });  
+}
+```
+
+- To runs only once after the initial rendering
+
+```js
+import { useEffect } from 'react';
+
+function MyComponent() {
+  useEffect(() => {
+    // Runs ONCE after initial rendering
+  }, []);
+}
+```
+
+- To runs only when any depenendecy value changes.
+
+```js
+import { useEffect, useState } from 'react';
+
+function MyComponent({ prop }) {
+  const [state, setState] = useState('');
+  useEffect(() => {
+    // Runs ONCE after initial rendering
+    // and after every rendering ONLY IF `prop` or `state` changes
+  }, [prop, state]);
+}
+```
+
+## conditional Rendering
+
+- Multiple Renders based of conditions
+
+```js
+if (isLoading) {
+    return (
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <div>
+        <h1>Error....</h1>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <h1>{user}</h1>
+    </div>
+  );
+```
+
+- short-circuits
+
+```js
+// If text is true we print that or if false we print 'john doe' 
+<h1>{text || 'john doe'}</h1> 
+      <button className='btn' onClick={() => setIsError(!isError)}>
+        toggle error
+      </button>
+      // If iserror is true the second element is executed
+      {isError && <h1>Error...</h1>}
+      // terinary operator - if condition is true we print first argument else we print second argument   
+      {isError ? (
+        <p>there is an error...</p>
+      ) : (
+        <div>
+          <h2>there is no error</h2>
+        </div>
+      )}
+```
+
+- Problem with useeffets and eventlistner
+
+When the window size is changed which trigger the event listner which call the checksize function which re-render the component which add and trigger the event listner which is a cycle.
+
+To avoid it we remove the listner.
+
+```js
+const Item = () => {
+  const [size, setSize] = useState(window.innerWidth);
+  const checkSize = () => {
+    setSize(window.innerWidth);
+  };
+  useEffect(() => {
+    window.addEventListener('resize', checkSize);
+    return () => {
+      window.removeEventListener('resize', checkSize);
+    };
+  }, []);
+```
+
+## Forms
+
+```js
+const [firstName,setFirstName]=useState('');
+  const [email,setEmail]=useState('');
+  const [people,setPeople]=useState([]);
+
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    console.log("heee")
+    if(firstName && email){
+      const p={id:new Date().getTime().toString(),firstName,email}
+      setPeople((old)=>{
+        return[...old,p];
+      })
+    }
+    setEmail('');
+    setFirstName('');
+  }
+```
+
+```html
+<form onSubmit={handleSubmit} className='form'>
+      <div className="form-control">
+        <label htmlFor="firstName">Name:</label>
+        <input type="text" id='firstName' name='firstName' onChange={(e)=>setFirstName(e.target.value)} value={firstName} />
+      </div>
+      <div className="form-control">
+        <label htmlFor="email">Email:</label>
+        <input type="text" id='email' value={email} onChange={(e)=>setEmail(e.target.value)} name='email' />
+      </div>
+      <button type='submit'> Add preson</button>
+    </form>
+```
+
+## USEREF
+
+useRef returns a mutable ref object whose .current property is initialized to the passed argument (initialValue). The returned object will persist for the full lifetime of the component.
+
+```js
+const UseRefBasics = () => {
+  const refContainer = useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(refContainer.current.value);
+  };
+  useEffect(() => {
+    console.log(refContainer.current);
+    refContainer.current.focus();
+  });
+
+  return (
+    <>
+      <form className='form' onSubmit={handleSubmit}>
+        <div>
+          <input type='text' ref={refContainer} />
+        </div>
+        <button type='submit'>submit</button>
+      </form>
+    </>
+  );
+};
+```
+
+## UesReducer
+
+useReducer is usually preferable to useState when you have complex state logic that involves multiple sub-values or when the next state depends on the previous one. useReducer also lets you optimize performance for components that trigger deep updates because you can pass dispatch down instead of callbacks.
+
+```js
+const initialState = {count: 0};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    </>
+  );
+}
+```
